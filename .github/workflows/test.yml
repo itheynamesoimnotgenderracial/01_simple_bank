@@ -12,6 +12,7 @@ on:
 jobs:
 
   test:
+    name: Test CI
     runs-on: ubuntu-latest
 
     # Service containers to run with `container-job`
