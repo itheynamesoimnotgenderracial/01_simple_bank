@@ -1,5 +1,6 @@
 DB_HOST ?= localhost
 DB_URL=postgresql://root:secret@$(DB_HOST):5432/simple_bank?sslmode=disable
+DB_PROD_URL=postgresql://root:CiaUBCo4vT9OcR0EkmLM@simple-bank.ct08gqmqu1ia.ap-southeast-1.rds.amazonaws.com:5432/postgres
 
 postgres:
 	docker run --name postgres12 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=secret -p 5432:5432 -d postgres:12-alpine
@@ -17,13 +18,13 @@ migrateup:
 	migrate -path db/migration -database "$(DB_URL)" -verbose up
 
 migrateup1:
-	migrate -path db/migration -database "$(DB_URL)" -verbose up 1
+	migrate -path db/migration -database "$(DB_PROD_URL)" -verbose up 1
 
 migratedown:
 	migrate -path db/migration -database "$(DB_URL)" -verbose down
 
 migratedown1:
-	migrate -path db/migration -database "$(DB_URL)" -verbose down 1
+	migrate -path db/migration -database "$(DB_PROD_URL)" -verbose down 1
 
 migratereset:
 	migrate -path db/migration -database "$(DB_URL)" force 0
