@@ -31,10 +31,11 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-        ports:
-          # Maps tcp port 5432 on service container to the host
-          - 5432:5432
-
+        # ports:
+        #   # Maps tcp port 5432 on service container to the host
+        #   - 5432:5432
+    env:
+      DB_HOST: postgres
     steps:
       - name: Check out code into the go module directory
         uses: actions/checkout@v4
@@ -52,10 +53,6 @@ jobs:
 
       - name: Run migrations
         run: make migrateup
-        env:
-          DB_HOST: postgres
 
       - name: Test
         run: make test
-        env:
-          DB_HOST: postgres
