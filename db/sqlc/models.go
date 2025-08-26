@@ -23,6 +23,17 @@ type Entry struct {
 	CreatedAt pgtype.Timestamptz
 }
 
+type Session struct {
+	ID           pgtype.UUID
+	Username     string
+	RefreshToken string
+	UserAgent    string
+	ClientIp     string
+	IsBlocked    bool
+	ExpiresAt    pgtype.Timestamptz
+	CreatedAt    pgtype.Timestamptz
+}
+
 type Transfer struct {
 	ID            int64
 	FormAccountID int64

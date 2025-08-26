@@ -1,3 +1,5 @@
 node_modules
 simple_bank.pem
 rds_credential.txt
+
+*.log
