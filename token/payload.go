@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 var (
@@ -14,10 +15,10 @@ var (
 
 // Payload contains the payload data of the token
 type Payload struct {
-	ID        uuid.UUID `json:"id"`
-	Username  string    `json:"username"`
-	IssuedAt  time.Time `json:"issued_at"`
-	ExpiredAt time.Time `json:"expired_at"`
+	ID        pgtype.UUID `json:"id"`
+	Username  string      `json:"username"`
+	IssuedAt  time.Time   `json:"issued_at"`
+	ExpiredAt time.Time   `json:"expired_at"`
 }
 
 // NewPayload creates a new token payload with a specific username and duration
@@ -29,7 +30,10 @@ func NewPayload(username string, duration time.Duration) (*Payload, error) {
 	}
 
 	payload := &Payload{
-		ID:        tokenID,
+		ID: pgtype.UUID{
+			Bytes: tokenID,
+			Valid: true,
+		},
 		Username:  username,
 		IssuedAt:  time.Now(),
 		ExpiredAt: time.Now().Add(duration),

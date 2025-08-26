@@ -1,6 +1,3 @@
-DB_HOST ?= localhost
-DB_URL=postgresql://root:secret@$(DB_HOST):5432/simple_bank?sslmode=disable
-DB_PROD_URL=postgresql://root:CiaUBCo4vT9OcR0EkmLM@simple-bank.ct08gqmqu1ia.ap-southeast-1.rds.amazonaws.com:5432/postgres
 
 postgres:
 	docker run --name postgres12 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=secret -p 5432:5432 -d postgres:12-alpine
@@ -15,19 +12,19 @@ dropdb:
 	docker exec -it postgres12 dropdb simple_bank
 
 migrateup:
-	migrate -path db/migration -database "$(DB_URL)" -verbose up
+	migrate -path db/migration -database "postgresql://root:secret@localhost:5432/simple_bank?sslmode=disable" -verbose up
 
 migrateup1:
-	migrate -path db/migration -database "$(DB_PROD_URL)" -verbose up 1
+	migrate -path db/migration -database "postgresql://root:secret@localhost:5432/simple_bank?sslmode=disable" -verbose up 1
 
 migratedown:
-	migrate -path db/migration -database "$(DB_URL)" -verbose down
+	migrate -path db/migration -database "postgresql://root:secret@localhost:5432/simple_bank?sslmode=disable" -verbose down
 
 migratedown1:
-	migrate -path db/migration -database "$(DB_PROD_URL)" -verbose down 1
+	migrate -path db/migration -database "postgresql://root:secret@localhost:5432/simple_bank?sslmode=disable" -verbose down 1
 
 migratereset:
-	migrate -path db/migration -database "$(DB_URL)" force 0
+	migrate -path db/migration -database "postgresql://root:secret@localhost:5432/simple_bank?sslmode=disable" force 0
 
 sqlc:
 	sqlc generate
@@ -44,4 +41,10 @@ server:
 mock:
 	mockgen  -package mockdb  -destination db/mock/store.go github.com/projects/go/01_simple_bank/db/sqlc Store
 
-.PHONY: postgres createdb dropdb migrateup migratedown migratereset sqlc dbnetworkkiller server mock migrateup1 migratedown1 test_rebuild
+db_docs:
+	dbdocs build docs/db.dbml
+
+db_schema:
+	dbml2sql --posgres -o docs/schema.sql docs/db.dbml
+
+.PHONY: postgres createdb dropdb migrateup migratedown migratereset sqlc dbnetworkkiller server mock migrateup1 migratedown1 test_rebuild db_docs db_schema
