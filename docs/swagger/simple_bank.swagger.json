@@ -133,20 +133,20 @@
         "user": {
           "$ref": "#/definitions/pbUser"
         },
-        "sessionId": {
+        "session_id": {
           "type": "string"
         },
-        "accessToken": {
+        "access_token": {
           "type": "string"
         },
-        "refreshToken": {
+        "refresh_token": {
           "type": "string"
         },
-        "accessTokenExpiresAt": {
+        "access_token_expires_at": {
           "type": "string",
           "format": "date-time"
         },
-        "refreshTokenExpiresAt": {
+        "refresh_token_expires_at": {
           "type": "string",
           "format": "date-time"
         }
@@ -164,11 +164,11 @@
         "email": {
           "type": "string"
         },
-        "passwordChangeAt": {
+        "password_change_at": {
           "type": "string",
           "format": "date-time"
         },
-        "createdAt": {
+        "created_at": {
           "type": "string",
           "format": "date-time"
         }
