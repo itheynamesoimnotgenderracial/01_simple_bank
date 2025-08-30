@@ -8,12 +8,20 @@ import (
 	db "github.com/projects/go/01_simple_bank/db/sqlc"
 	"github.com/projects/go/01_simple_bank/pb"
 	"github.com/projects/go/01_simple_bank/util"
+	"github.com/projects/go/01_simple_bank/validation"
+	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func (server *Server) LoginUser(ctx context.Context, req *pb.LoginUserRequest) (*pb.LoginUserResponse, error) {
+	violations := validateLoginUserRequest(req)
+
+	if violations != nil {
+		return nil, invalidArgumentError(violations)
+	}
+
 	user, err := server.store.GetUser(ctx, req.Username)
 
 	if err != nil {
@@ -75,4 +83,16 @@ func (server *Server) LoginUser(ctx context.Context, req *pb.LoginUserRequest) (
 	}
 
 	return rsp, nil
+}
+
+func validateLoginUserRequest(req *pb.LoginUserRequest) (violations []*errdetails.BadRequest_FieldViolation) {
+	if err := validation.ValidateUsername(req.GetUsername()); err != nil {
+		violations = append(violations, fieldViolations("username", err))
+	}
+
+	if err := validation.ValidatePassword(req.GetPassword()); err != nil {
+		violations = append(violations, fieldViolations("password", err))
+	}
+
+	return violations
 }
