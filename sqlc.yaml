@@ -10,3 +10,9 @@ sql:
         sql_package: "pgx/v5"
         emit_interface: true
         emit_empty_slices: true
+        overrides:
+          - db_type: "text"
+            nullable: true
+            go_type:
+              import: "database/sql"
+              type: "NullString"
