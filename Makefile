@@ -70,6 +70,18 @@ evans:
 	--port 9090 \
 	repl
 
+docker_run_build:
+	docker compose up -d --build
+
+docker_shutdown_all:
+	docker compose down -v
+
+docker_up:
+	docker compose up -d
+
+docker_down:
+	docker compose down
+
 # Tool → Module mapping
 TOOLS = \
 	github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway=github.com/grpc-ecosystem/grpc-gateway/v2 \
@@ -91,4 +103,4 @@ install-tools:
 
 
 
-.PHONY: postgres createdb dropdb migrateup migratedown migratereset sqlc dbnetworkkiller server mock migrateup1 migratedown1 test_rebuild db_docs db_schema proto evans install-tools
+.PHONY: postgres createdb dropdb migrateup migratedown migratereset sqlc dbnetworkkiller server mock migrateup1 migratedown1 test_rebuild db_docs db_schema proto evans install-tools docker_run_build docker_shutdown_all docker_up docker_down
