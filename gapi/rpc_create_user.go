@@ -57,7 +57,6 @@ func (server *Server) CreateUser(ctx context.Context, req *pb.CreateUserRequest)
 	}
 
 	// arg = db.CreateUserParams{}
-
 	txResult, err := server.store.CreateUserTx(ctx, arg)
 	if err != nil {
 		errorCode := db.ErrorCode(err)
