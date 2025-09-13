@@ -32,7 +32,7 @@ sqlc:
 	sqlc generate
 
 test:
-	go test -v -cover ./...
+	go test -v -cover -short ./...
 
 test_rebuild:
 	go test -v -cover -count=1 ./...
@@ -82,6 +82,9 @@ docker_up:
 docker_down:
 	docker compose down
 
+new_migration:
+	migrate create -ext sql -dir db/migration -seq $(name)
+
 # Tool → Module mapping
 TOOLS = \
 	github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway=github.com/grpc-ecosystem/grpc-gateway/v2 \
@@ -103,4 +106,4 @@ install-tools:
 
 
 
-.PHONY: postgres createdb dropdb migrateup migratedown migratereset sqlc dbnetworkkiller server mock migrateup1 migratedown1 test_rebuild db_docs db_schema proto evans install-tools docker_run_build docker_shutdown_all docker_up docker_down
+.PHONY: postgres createdb dropdb migrateup migratedown migratereset sqlc dbnetworkkiller server mock migrateup1 migratedown1 test_rebuild db_docs db_schema proto evans install-tools docker_run_build docker_shutdown_all docker_up docker_down new_migration

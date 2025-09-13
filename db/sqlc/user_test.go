@@ -11,6 +11,10 @@ import (
 )
 
 func createRandomUser(t *testing.T) User {
+	if testing.Short() {
+		t.Skip()
+	}
+
 	hashedPassword, err := util.HashPassword(util.RandomString(6))
 	require.NoError(t, err)
 

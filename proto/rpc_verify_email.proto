@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package pb;
+
+import "user.proto";
+
+option go_package = "github.com/projects/go/01_simple_bank/pb";
+
+message VerifyEmailRequest {
+    int64 email_id = 1;
+    string secret_code = 2;
+}
+
+message VerifyEmailResponse {
+    bool is_verified = 1;
+}
+
+
