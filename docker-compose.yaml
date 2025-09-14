@@ -10,7 +10,8 @@ services:
       - "5432:5432"
     networks:
       - banknet
-
+    volumes:
+      - data-volume:/var/lib/postgresql/data
   redis:
     container_name: redis
     image: redis:7-alpine
@@ -20,6 +21,7 @@ services:
       - banknet
 
   api:
+    container_name: api
     build:
       context: .
       dockerfile: Dockerfile
@@ -43,3 +45,6 @@ networks:
   banknet:
     name: banknet
     driver: bridge
+
+volumes:
+  data-volume:
