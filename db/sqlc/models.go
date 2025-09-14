@@ -44,6 +44,7 @@ type Transfer struct {
 
 type User struct {
 	Username          string             `json:"username"`
+	Role              string             `json:"role"`
 	HashedPassword    string             `json:"hashed_password"`
 	FullName          string             `json:"full_name"`
 	Email             string             `json:"email"`

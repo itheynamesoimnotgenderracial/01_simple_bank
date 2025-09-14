@@ -176,7 +176,7 @@ INSERT INTO users (
 ) VALUES (
   $1, $2, $3, $4
 )
-RETURNING username, hashed_password, full_name, email, is_email_verified, password_changed_at, created_at
+RETURNING username, role, hashed_password, full_name, email, is_email_verified, password_changed_at, created_at
 `
 
 type CreateUserParams struct {
@@ -196,6 +196,7 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 	var i User
 	err := row.Scan(
 		&i.Username,
+		&i.Role,
 		&i.HashedPassword,
 		&i.FullName,
 		&i.Email,
@@ -342,7 +343,7 @@ func (q *Queries) GetTransfer(ctx context.Context, id int64) (Transfer, error) {
 }
 
 const getUser = `-- name: GetUser :one
-SELECT username, hashed_password, full_name, email, is_email_verified, password_changed_at, created_at FROM users
+SELECT username, role, hashed_password, full_name, email, is_email_verified, password_changed_at, created_at FROM users
 WHERE username = $1 LIMIT 1
 `
 
@@ -351,6 +352,7 @@ func (q *Queries) GetUser(ctx context.Context, username string) (User, error) {
 	var i User
 	err := row.Scan(
 		&i.Username,
+		&i.Role,
 		&i.HashedPassword,
 		&i.FullName,
 		&i.Email,
@@ -510,7 +512,7 @@ SET
   email = coalesce($4, email),
   is_email_verified = coalesce($5, is_email_verified)
 WHERE username = $6
-RETURNING username, hashed_password, full_name, email, is_email_verified, password_changed_at, created_at
+RETURNING username, role, hashed_password, full_name, email, is_email_verified, password_changed_at, created_at
 `
 
 type UpdateUserParams struct {
@@ -534,6 +536,7 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 	var i User
 	err := row.Scan(
 		&i.Username,
+		&i.Role,
 		&i.HashedPassword,
 		&i.FullName,
 		&i.Email,
