@@ -107,3 +107,36 @@ RETURNING *;
 -- name: GetSession :one
 SELECT * FROM sessions
 WHERE username = $1 LIMIT 1;
+
+-- name: UpdateUser :one
+UPDATE users
+SET
+  hashed_password = coalesce(sqlc.narg(hashed_password), hashed_password),
+  password_changed_at = coalesce(sqlc.narg(password_changed_at), password_changed_at),
+  full_name = coalesce(sqlc.narg(full_name), full_name),
+  email = coalesce(sqlc.narg(email), email),
+  is_email_verified = coalesce(sqlc.narg(is_email_verified), is_email_verified)
+WHERE username = sqlc.arg(username)
+RETURNING *;
+
+-- name: CreateVerifyEmail :one
+INSERT INTO verify_emails (
+  username,
+  email,
+  secret_code
+) VALUES (
+  $1, $2, $3
+)
+RETURNING *;
+
+
+-- name: UpdateVerifyEmail :one
+UPDATE verify_emails
+SET
+  is_used = TRUE
+WHERE 
+  id = @id
+  AND secret_code = @secret_code
+  AND is_used = FALSE
+  AND expires_at > now()
+RETURNING *;

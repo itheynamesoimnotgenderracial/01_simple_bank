@@ -1,0 +1,60 @@
+package worker
+
+import (
+	"context"
+
+	"github.com/hibiken/asynq"
+	db "github.com/projects/go/01_simple_bank/db/sqlc"
+	"github.com/projects/go/01_simple_bank/email"
+	"github.com/rs/zerolog/log"
+)
+
+const (
+	QueueCritical = "critical"
+	QueueDefault  = "default"
+)
+
+type TaskProcessor interface {
+	Start() error
+	ProcessTaskSendVerifyEmail(ctx context.Context, task *asynq.Task) error
+}
+
+type RedisProcessor struct {
+	server *asynq.Server
+	store  db.Store
+	mailer email.EmailSender
+}
+
+func NewRedisTaskProcessor(redisOpt asynq.RedisClientOpt, store db.Store, mailer email.EmailSender) TaskProcessor {
+	server := asynq.NewServer(
+		redisOpt,
+		asynq.Config{
+			Queues: map[string]int{
+				QueueCritical: 10,
+				QueueDefault:  5,
+			},
+			ErrorHandler: asynq.ErrorHandlerFunc(func(ctx context.Context, task *asynq.Task, err error) {
+				log.
+					Error().
+					Err(err).
+					Str("type", task.Type()).
+					Bytes("payload", task.Payload()).
+					Msg("process task failed")
+			}),
+			Logger: NewLogger(),
+		},
+	)
+
+	return &RedisProcessor{
+		server: server,
+		store:  store,
+		mailer: mailer,
+	}
+}
+
+func (processor *RedisProcessor) Start() error {
+	mux := asynq.NewServeMux()
+	mux.HandleFunc(TaskSendVerifyEmail, processor.ProcessTaskSendVerifyEmail)
+
+	return processor.server.Start(mux)
+}

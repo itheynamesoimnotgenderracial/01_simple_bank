@@ -32,7 +32,7 @@ sqlc:
 	sqlc generate
 
 test:
-	go test -v -cover ./...
+	go test -v -cover -short ./...
 
 test_rebuild:
 	go test -v -cover -count=1 ./...
@@ -42,6 +42,7 @@ server:
 
 mock:
 	mockgen  -package mockdb  -destination db/mock/store.go github.com/projects/go/01_simple_bank/db/sqlc Store
+	mockgen  -package mockwk  -destination worker/mock/store.go github.com/projects/go/01_simple_bank/worker TaskDistributor
 
 db_docs:
 	dbdocs build docs/db.dbml
@@ -49,4 +50,61 @@ db_docs:
 db_schema:
 	dbml2sql --posgres -o docs/schema.sql docs/db.dbml
 
-.PHONY: postgres createdb dropdb migrateup migratedown migratereset sqlc dbnetworkkiller server mock migrateup1 migratedown1 test_rebuild db_docs db_schema
+proto:
+	rm -rf pb/*.go
+	rm -rf docs/swagger/*.swagger.json
+	protoc --proto_path=proto --go_out=pb --go_opt=paths=source_relative \
+    --go-grpc_out=pb --go-grpc_opt=paths=source_relative \
+	--grpc-gateway_out=pb --grpc-gateway_opt paths=source_relative \
+	--openapiv2_out=docs/swagger --openapiv2_opt=allow_merge=true,merge_file_name=simple_bank,json_names_for_fields=false \
+    proto/*.proto
+	statik -src=./docs/swagger -dest=./docs
+
+evans:
+	docker run --rm -it \
+	--network banknet \
+	-v "$(CURDIR):/mount:ro" \
+	ghcr.io/ktr0731/evans:latest \
+	--path /mount/proto/ \
+	--proto service_simple_bank.proto \
+	--host api \
+	--port 9090 \
+	repl
+
+docker_run_build:
+	docker compose up -d --build
+
+docker_shutdown_all:
+	docker compose down -v
+
+docker_up:
+	docker compose up -d
+
+docker_down:
+	docker compose down
+
+new_migration:
+	migrate create -ext sql -dir db/migration -seq $(name)
+
+# Tool → Module mapping
+TOOLS = \
+	github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway=github.com/grpc-ecosystem/grpc-gateway/v2 \
+	github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2=github.com/grpc-ecosystem/grpc-gateway/v2 \
+	google.golang.org/protobuf/cmd/protoc-gen-go=google.golang.org/protobuf \
+	google.golang.org/protoc-gen-go-grpc=google.golang.org/protoc-gen-go-grpc
+
+
+install-tools:
+	@echo "Installing tools from go.mod..."
+	@for toolmap in $(TOOLS); do \
+		TOOL=$${toolmap%=*}; \
+		MODULE=$${toolmap#*=}; \
+		VERSION=$$(go list -m -f '{{.Version}}' $$MODULE); \
+		echo "Installing $$TOOL@$${VERSION}..."; \
+		go install $$TOOL@$$VERSION; \
+	done
+
+
+
+
+.PHONY: postgres createdb dropdb migrateup migratedown migratereset sqlc dbnetworkkiller server mock migrateup1 migratedown1 test_rebuild db_docs db_schema proto evans install-tools docker_run_build docker_shutdown_all docker_up docker_down new_migration
