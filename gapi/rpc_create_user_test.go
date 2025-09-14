@@ -74,7 +74,7 @@ func TestCreateUserAPI(t *testing.T) {
 			req: &pb.CreateUserRequest{
 				Username: user.Username,
 				Password: password,
-				Fullname: user.FullName,
+				FullName: user.FullName,
 				Email:    user.Email,
 			},
 			buildStubs: func(store *mockdb.MockStore, taskDistributor *mockwk.MockTaskDistributor) {
@@ -117,7 +117,7 @@ func TestCreateUserAPI(t *testing.T) {
 			req: &pb.CreateUserRequest{
 				Username: user.Username,
 				Password: password,
-				Fullname: user.FullName,
+				FullName: user.FullName,
 				Email:    user.Email,
 			},
 			buildStubs: func(store *mockdb.MockStore, taskDistributor *mockwk.MockTaskDistributor) {
@@ -146,7 +146,7 @@ func TestCreateUserAPI(t *testing.T) {
 			req: &pb.CreateUserRequest{
 				Username: user.Username,
 				Password: password,
-				Fullname: user.FullName,
+				FullName: user.FullName,
 				Email:    user.Email,
 			},
 			buildStubs: func(store *mockdb.MockStore, taskDistributor *mockwk.MockTaskDistributor) {
@@ -174,7 +174,7 @@ func TestCreateUserAPI(t *testing.T) {
 			req: &pb.CreateUserRequest{
 				Username: user.Username,
 				Password: password,
-				Fullname: user.FullName,
+				FullName: user.FullName,
 				Email:    "invalid-email",
 			},
 			buildStubs: func(store *mockdb.MockStore, taskDistributor *mockwk.MockTaskDistributor) {

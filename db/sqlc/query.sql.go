@@ -19,8 +19,8 @@ RETURNING id, owner, balance, currency, created_at
 `
 
 type AddAccountBalanceParams struct {
-	Amount int64
-	ID     int64
+	Amount int64 `json:"amount"`
+	ID     int64 `json:"id"`
 }
 
 func (q *Queries) AddAccountBalance(ctx context.Context, arg AddAccountBalanceParams) (Account, error) {
@@ -46,9 +46,9 @@ RETURNING id, owner, balance, currency, created_at
 `
 
 type CreateAccountParams struct {
-	Owner    string
-	Balance  int64
-	Currency string
+	Owner    string `json:"owner"`
+	Balance  int64  `json:"balance"`
+	Currency string `json:"currency"`
 }
 
 func (q *Queries) CreateAccount(ctx context.Context, arg CreateAccountParams) (Account, error) {
@@ -74,8 +74,8 @@ RETURNING id, account_id, amount, created_at
 `
 
 type CreateEntryParams struct {
-	AccountID int64
-	Amount    int64
+	AccountID int64 `json:"account_id"`
+	Amount    int64 `json:"amount"`
 }
 
 func (q *Queries) CreateEntry(ctx context.Context, arg CreateEntryParams) (Entry, error) {
@@ -106,13 +106,13 @@ RETURNING id, username, refresh_token, user_agent, client_ip, is_blocked, expire
 `
 
 type CreateSessionParams struct {
-	ID           pgtype.UUID
-	Username     string
-	RefreshToken string
-	UserAgent    string
-	ClientIp     string
-	IsBlocked    bool
-	ExpiresAt    pgtype.Timestamptz
+	ID           pgtype.UUID        `json:"id"`
+	Username     string             `json:"username"`
+	RefreshToken string             `json:"refresh_token"`
+	UserAgent    string             `json:"user_agent"`
+	ClientIp     string             `json:"client_ip"`
+	IsBlocked    bool               `json:"is_blocked"`
+	ExpiresAt    pgtype.Timestamptz `json:"expires_at"`
 }
 
 func (q *Queries) CreateSession(ctx context.Context, arg CreateSessionParams) (Session, error) {
@@ -149,9 +149,9 @@ RETURNING id, form_account_id, to_account_id, amount, created_at
 `
 
 type CreateTransferParams struct {
-	FormAccountID int64
-	ToAccountID   int64
-	Amount        int64
+	FormAccountID int64 `json:"form_account_id"`
+	ToAccountID   int64 `json:"to_account_id"`
+	Amount        int64 `json:"amount"`
 }
 
 func (q *Queries) CreateTransfer(ctx context.Context, arg CreateTransferParams) (Transfer, error) {
@@ -180,10 +180,10 @@ RETURNING username, hashed_password, full_name, email, is_email_verified, passwo
 `
 
 type CreateUserParams struct {
-	Username       string
-	HashedPassword string
-	FullName       string
-	Email          string
+	Username       string `json:"username"`
+	HashedPassword string `json:"hashed_password"`
+	FullName       string `json:"full_name"`
+	Email          string `json:"email"`
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
@@ -218,9 +218,9 @@ RETURNING id, username, email, secret_code, is_used, created_at, expires_at
 `
 
 type CreateVerifyEmailParams struct {
-	Username   string
-	Email      string
-	SecretCode string
+	Username   string `json:"username"`
+	Email      string `json:"email"`
+	SecretCode string `json:"secret_code"`
 }
 
 func (q *Queries) CreateVerifyEmail(ctx context.Context, arg CreateVerifyEmailParams) (VerifyEmail, error) {
@@ -370,9 +370,9 @@ OFFSET $3
 `
 
 type ListAccountsParams struct {
-	Owner  string
-	Limit  int32
-	Offset int32
+	Owner  string `json:"owner"`
+	Limit  int32  `json:"limit"`
+	Offset int32  `json:"offset"`
 }
 
 func (q *Queries) ListAccounts(ctx context.Context, arg ListAccountsParams) ([]Account, error) {
@@ -409,8 +409,8 @@ OFFSET $2
 `
 
 type ListEntriesParams struct {
-	Limit  int32
-	Offset int32
+	Limit  int32 `json:"limit"`
+	Offset int32 `json:"offset"`
 }
 
 func (q *Queries) ListEntries(ctx context.Context, arg ListEntriesParams) ([]Entry, error) {
@@ -446,8 +446,8 @@ OFFSET $2
 `
 
 type ListTransfersParams struct {
-	Limit  int32
-	Offset int32
+	Limit  int32 `json:"limit"`
+	Offset int32 `json:"offset"`
 }
 
 func (q *Queries) ListTransfers(ctx context.Context, arg ListTransfersParams) ([]Transfer, error) {
@@ -484,8 +484,8 @@ RETURNING id, owner, balance, currency, created_at
 `
 
 type UpdateAccountParams struct {
-	ID      int64
-	Balance int64
+	ID      int64 `json:"id"`
+	Balance int64 `json:"balance"`
 }
 
 func (q *Queries) UpdateAccount(ctx context.Context, arg UpdateAccountParams) (Account, error) {
@@ -514,12 +514,12 @@ RETURNING username, hashed_password, full_name, email, is_email_verified, passwo
 `
 
 type UpdateUserParams struct {
-	HashedPassword    pgtype.Text
-	PasswordChangedAt pgtype.Timestamptz
-	FullName          pgtype.Text
-	Email             pgtype.Text
-	IsEmailVerified   pgtype.Bool
-	Username          string
+	HashedPassword    pgtype.Text        `json:"hashed_password"`
+	PasswordChangedAt pgtype.Timestamptz `json:"password_changed_at"`
+	FullName          pgtype.Text        `json:"full_name"`
+	Email             pgtype.Text        `json:"email"`
+	IsEmailVerified   pgtype.Bool        `json:"is_email_verified"`
+	Username          string             `json:"username"`
 }
 
 func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error) {
@@ -557,8 +557,8 @@ RETURNING id, username, email, secret_code, is_used, created_at, expires_at
 `
 
 type UpdateVerifyEmailParams struct {
-	ID         int64
-	SecretCode string
+	ID         int64  `json:"id"`
+	SecretCode string `json:"secret_code"`
 }
 
 func (q *Queries) UpdateVerifyEmail(ctx context.Context, arg UpdateVerifyEmailParams) (VerifyEmail, error) {

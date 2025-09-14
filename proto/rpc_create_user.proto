@@ -8,7 +8,7 @@ option go_package = "github.com/projects/go/01_simple_bank/pb";
 
 message CreateUserRequest {
     string username = 1;
-    string fullname = 2;
+    string full_name = 2;
     string email = 3;
     string password = 4;
 }

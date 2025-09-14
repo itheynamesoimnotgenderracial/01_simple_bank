@@ -63,10 +63,10 @@ func TestCreateUserAPI(t *testing.T) {
 		{
 			name: "OK",
 			body: gin.H{
-				"username": user.Username,
-				"password": password,
-				"fullName": user.FullName,
-				"email":    user.Email,
+				"username":  user.Username,
+				"password":  password,
+				"full_name": user.FullName,
+				"email":     user.Email,
 			},
 			buildStubs: func(store *mockdb.MockStore) {
 				arg := db.CreateUserParams{
@@ -89,10 +89,10 @@ func TestCreateUserAPI(t *testing.T) {
 		{
 			name: "InternalError",
 			body: gin.H{
-				"username": user.Username,
-				"password": password,
-				"fullName": user.FullName,
-				"email":    user.Email,
+				"username":  user.Username,
+				"password":  password,
+				"full_name": user.FullName,
+				"email":     user.Email,
 			},
 			buildStubs: func(store *mockdb.MockStore) {
 				store.
@@ -108,10 +108,10 @@ func TestCreateUserAPI(t *testing.T) {
 		{
 			name: "DuplicateUsername",
 			body: gin.H{
-				"username": user.Username,
-				"password": password,
-				"fullName": user.FullName,
-				"email":    user.Email,
+				"username":  user.Username,
+				"password":  password,
+				"full_name": user.FullName,
+				"email":     user.Email,
 			},
 			buildStubs: func(store *mockdb.MockStore) {
 				store.
@@ -127,10 +127,10 @@ func TestCreateUserAPI(t *testing.T) {
 		{
 			name: "InvalidUsername",
 			body: gin.H{
-				"username": "invalid-user#1",
-				"password": password,
-				"fullName": user.FullName,
-				"email":    user.Email,
+				"username":  "invalid-user#1",
+				"password":  password,
+				"full_name": user.FullName,
+				"email":     user.Email,
 			},
 			buildStubs: func(store *mockdb.MockStore) {
 				store.
@@ -145,10 +145,10 @@ func TestCreateUserAPI(t *testing.T) {
 		{
 			name: "InvalidEmail",
 			body: gin.H{
-				"username": user.Username,
-				"password": password,
-				"fullName": user.FullName,
-				"email":    "qweqweasdasd.com",
+				"username":  user.Username,
+				"password":  password,
+				"full_name": user.FullName,
+				"email":     "qweqweasdasd.com",
 			},
 			buildStubs: func(store *mockdb.MockStore) {
 				store.
@@ -163,10 +163,10 @@ func TestCreateUserAPI(t *testing.T) {
 		{
 			name: "TooShortPassword",
 			body: gin.H{
-				"username": user.Username,
-				"password": "123",
-				"fullName": user.FullName,
-				"email":    "qweqweasdasd.com",
+				"username":  user.Username,
+				"password":  "123",
+				"full_name": user.FullName,
+				"email":     "qweqweasdasd.com",
 			},
 			buildStubs: func(store *mockdb.MockStore) {
 				store.
@@ -214,7 +214,7 @@ func TestCreateUserAPI(t *testing.T) {
 func randomUser(t *testing.T) (user db.User, password string) {
 	password = util.RandomString(6)
 	hashedPassword, err := util.HashPassword(password)
-	fmt.Println("randomUser hashedPasword", hashedPassword)
+	// fmt.Println("randomUser hashedPasword", hashedPassword)
 	require.NoError(t, err)
 
 	user = db.User{
@@ -243,8 +243,8 @@ func requireBodyMatchUser(t *testing.T, body *bytes.Buffer, user db.User) {
 
 func TestLoginUserAPI(t *testing.T) {
 	user, password := randomUser(t)
-	fmt.Println("Hashed password in test:", user.HashedPassword)
-	fmt.Println(user)
+	// fmt.Println("Hashed password in test:", user.HashedPassword)
+	// fmt.Println(user)
 	testCases := []struct {
 		name          string
 		body          gin.H
@@ -284,7 +284,7 @@ func TestLoginUserAPI(t *testing.T) {
 				store.EXPECT().
 					GetUser(gomock.Any(), gomock.Any()).
 					Times(1).
-					Return(db.User{}, sql.ErrNoRows)
+					Return(db.User{}, db.ErrRecordNotFound)
 			},
 			checkResponse: func(recorder *httptest.ResponseRecorder) {
 				require.Equal(t, http.StatusNotFound, recorder.Code)

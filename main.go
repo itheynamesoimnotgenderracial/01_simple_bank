@@ -33,7 +33,7 @@ func main() {
 	config, err := util.LoadConfig(".")
 
 	if err != nil {
-		log.Printf("cannot load configuration:", err)
+		log.Error().Msgf("cannot load configuration: %v", err)
 	}
 
 	if config.Environment == "development" {
@@ -43,7 +43,7 @@ func main() {
 	conn, err := pgxpool.New(context.Background(), config.DBSource)
 
 	if err != nil {
-		log.Printf("cannot connect to db:", err)
+		log.Error().Msgf("cannot connect to db: %v", err)
 	}
 
 	runDBMigration(config.MigrationURL, config.DBSource)
@@ -64,11 +64,11 @@ func runDBMigration(migrationURL string, dbSource string) {
 	migration, err := migrate.New(migrationURL, dbSource)
 
 	if err != nil {
-		log.Printf("cannot create new migrate instance:", err)
+		log.Error().Msgf("cannot create new migrate instance: %v", err)
 	}
 
 	if err = migration.Up(); err != nil && err != migrate.ErrNoChange {
-		log.Printf("failed to migrate up:", err)
+		log.Error().Msgf("failed to migrate up: %v", err)
 	}
 
 	log.Info().Msg("db migrated successfully")
@@ -96,7 +96,7 @@ func runGrpcServer(config util.Config, store db.Store, taskDistributor worker.Ta
 	server, err := gapi.NewServer(config, store, taskDistributor)
 
 	if err != nil {
-		log.Printf("token create server error:", err)
+		log.Error().Msgf("token create server error: %v", err)
 	}
 
 	grpcLogger := grpc.UnaryInterceptor(gapi.GrpcLogger)
@@ -107,14 +107,14 @@ func runGrpcServer(config util.Config, store db.Store, taskDistributor worker.Ta
 	listener, err := net.Listen("tcp", config.GRPCServerAddress)
 
 	if err != nil {
-		log.Printf("cannot create gRPC listener:", err)
+		log.Error().Msgf("cannot create gRPC listener: %v", err)
 	}
 
 	log.Info().Msgf("start gRPC server at %s", listener.Addr().String())
 	err = grpcServer.Serve(listener)
 
 	if err != nil {
-		log.Printf("cannot start gRPC server:", err)
+		log.Error().Msgf("cannot start gRPC server: %v", err)
 	}
 }
 
@@ -122,7 +122,7 @@ func runGatewayServer(config util.Config, store db.Store, taskDistributor worker
 	server, err := gapi.NewServer(config, store, taskDistributor)
 
 	if err != nil {
-		log.Printf("token create server error:", err)
+		log.Error().Msgf("token create server error: %v", err)
 	}
 
 	jsonOption := runtime.WithMarshalerOption(runtime.MIMEWildcard, &runtime.JSONPb{
@@ -140,7 +140,7 @@ func runGatewayServer(config util.Config, store db.Store, taskDistributor worker
 	err = pb.RegisterSimpleBankHandlerServer(ctx, grpcMux, server)
 
 	if err != nil {
-		log.Printf("cannot register handler server:", err)
+		log.Error().Msgf("cannot register handler server: %v", err)
 	}
 
 	mux := http.NewServeMux()
@@ -149,7 +149,7 @@ func runGatewayServer(config util.Config, store db.Store, taskDistributor worker
 	statikFS, err := fs.New()
 
 	if err != nil {
-		log.Printf("cannot statik file system:", err)
+		log.Error().Msgf("cannot statik file system: %v", err)
 	}
 
 	swaggerHandler := http.StripPrefix("/swagger/", http.FileServer(statikFS))
@@ -158,7 +158,7 @@ func runGatewayServer(config util.Config, store db.Store, taskDistributor worker
 	listener, err := net.Listen("tcp", config.HTTPServerAddress)
 
 	if err != nil {
-		log.Printf("cannot create http listener:", err)
+		log.Error().Msgf("cannot create http listener: %v", err)
 	}
 
 	log.Info().Msgf("start HTTP gateway server at %s", listener.Addr().String())
@@ -166,7 +166,7 @@ func runGatewayServer(config util.Config, store db.Store, taskDistributor worker
 	err = http.Serve(listener, handler)
 
 	if err != nil {
-		log.Printf("cannot start http gateway server:", err)
+		log.Error().Msgf("cannot start http gateway server: %v", err)
 	}
 }
 
@@ -174,13 +174,13 @@ func runGinServer(config util.Config, store db.Store) {
 	server, err := api.NewServer(config, store)
 
 	if err != nil {
-		log.Printf("token create server error:", err)
+		log.Error().Msgf("token create server error: %v", err)
 	}
 
 	err = server.Start(config.HTTPServerAddress)
 
 	if err != nil {
-		log.Printf("cannot start server:", err)
+		log.Error().Msgf("cannot start server: %v", err)
 	}
 
 }

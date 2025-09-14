@@ -35,7 +35,7 @@ func (server *Server) CreateUser(ctx context.Context, req *pb.CreateUserRequest)
 		CreateUserParams: db.CreateUserParams{
 			Username:       req.GetUsername(),
 			HashedPassword: hashedPassword,
-			FullName:       req.GetFullname(),
+			FullName:       req.GetFullName(),
 			Email:          req.GetEmail(),
 		},
 		AfterCreate: func(user db.User) error {
@@ -82,7 +82,7 @@ func validateCreateUserRequest(req *pb.CreateUserRequest) (violations []*errdeta
 		violations = append(violations, fieldViolations("password", err))
 	}
 
-	if err := validation.ValidateFullname(req.GetFullname()); err != nil {
+	if err := validation.ValidateFullname(req.GetFullName()); err != nil {
 		violations = append(violations, fieldViolations("full_name", err))
 	}
 

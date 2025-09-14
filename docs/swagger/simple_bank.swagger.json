@@ -170,7 +170,7 @@
         "username": {
           "type": "string"
         },
-        "fullname": {
+        "full_name": {
           "type": "string"
         },
         "email": {
